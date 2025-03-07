@@ -71,12 +71,12 @@ x-shared-env: &shared-api-worker-env
   REDIS_USE_CLUSTERS: ${REDIS_USE_CLUSTERS:-false}
   REDIS_CLUSTERS: ${REDIS_CLUSTERS:-}
   REDIS_CLUSTERS_PASSWORD: ${REDIS_CLUSTERS_PASSWORD:-}
-  CELERY_USE_SENTINEL: ${CELERY_USE_SENTINEL:-false}
-  CELERY_SENTINEL_MASTER_NAME: ${CELERY_SENTINEL_MASTER_NAME:-}
-  CELERY_SENTINEL_SOCKET_TIMEOUT: ${CELERY_SENTINEL_SOCKET_TIMEOUT:-0.1}
   CELERY_REDIS_DB: ${CELERY_REDIS_DB:-1}
   CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://:difyai123456@redis:6379/${CELERY_REDIS_DB}}
   BROKER_USE_SSL: ${BROKER_USE_SSL:-false}
+  CELERY_USE_SENTINEL: ${CELERY_USE_SENTINEL:-false}
+  CELERY_SENTINEL_MASTER_NAME: ${CELERY_SENTINEL_MASTER_NAME:-}
+  CELERY_SENTINEL_SOCKET_TIMEOUT: ${CELERY_SENTINEL_SOCKET_TIMEOUT:-0.1}
   WEB_API_CORS_ALLOW_ORIGINS: ${WEB_API_CORS_ALLOW_ORIGINS:-*}
   CONSOLE_CORS_ALLOW_ORIGINS: ${CONSOLE_CORS_ALLOW_ORIGINS:-*}
   MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minio}
@@ -89,64 +89,27 @@ x-shared-env: &shared-api-worker-env
   OPENDAL_S3_ENDPOINT: ${OPENDAL_S3_ENDPOINT:-${MINIO_ADDRESS}}
   OPENDAL_S3_ACCESS_KEY_ID: ${OPENDAL_S3_ACCESS_KEY_ID:-${MINIO_ACCESS_KEY}}
   OPENDAL_S3_SECRET_ACCESS_KEY: ${OPENDAL_S3_SECRET_ACCESS_KEY:-${MINIO_SECRET_KEY}}
-  S3_ENDPOINT: ${S3_ENDPOINT:-}
-  S3_REGION: ${S3_REGION:-us-east-1}
-  S3_BUCKET_NAME: ${S3_BUCKET_NAME:-difyai}
-  S3_ACCESS_KEY: ${S3_ACCESS_KEY:-}
-  S3_SECRET_KEY: ${S3_SECRET_KEY:-}
-  S3_USE_AWS_MANAGED_IAM: ${S3_USE_AWS_MANAGED_IAM:-false}
-  AZURE_BLOB_ACCOUNT_NAME: ${AZURE_BLOB_ACCOUNT_NAME:-your-blob-account-name}
-  AZURE_BLOB_ACCOUNT_KEY: ${AZURE_BLOB_ACCOUNT_KEY:-your-blob-account-key}
-  AZURE_BLOB_CONTAINER_NAME: ${AZURE_BLOB_CONTAINER_NAME:-difyai-container}
-  AZURE_BLOB_ACCOUNT_URL: ${AZURE_BLOB_ACCOUNT_URL:-https://<your_account_name>.blob.core.windows.net}
-  GOOGLE_STORAGE_BUCKET_NAME: ${GOOGLE_STORAGE_BUCKET_NAME:-your-bucket-name}
-  GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64: ${GOOGLE_STORAGE_SERVICE_ACCOUNT_JSON_BASE64:-}
-  ALIYUN_OSS_BUCKET_NAME: ${ALIYUN_OSS_BUCKET_NAME:-your-bucket-name}
-  ALIYUN_OSS_ACCESS_KEY: ${ALIYUN_OSS_ACCESS_KEY:-your-access-key}
-  ALIYUN_OSS_SECRET_KEY: ${ALIYUN_OSS_SECRET_KEY:-your-secret-key}
-  ALIYUN_OSS_ENDPOINT: ${ALIYUN_OSS_ENDPOINT:-https://oss-ap-southeast-1-internal.aliyuncs.com}
-  ALIYUN_OSS_REGION: ${ALIYUN_OSS_REGION:-ap-southeast-1}
-  ALIYUN_OSS_AUTH_VERSION: ${ALIYUN_OSS_AUTH_VERSION:-v4}
-  ALIYUN_OSS_PATH: ${ALIYUN_OSS_PATH:-your-path}
-  TENCENT_COS_BUCKET_NAME: ${TENCENT_COS_BUCKET_NAME:-your-bucket-name}
-  TENCENT_COS_SECRET_KEY: ${TENCENT_COS_SECRET_KEY:-your-secret-key}
-  TENCENT_COS_SECRET_ID: ${TENCENT_COS_SECRET_ID:-your-secret-id}
-  TENCENT_COS_REGION: ${TENCENT_COS_REGION:-your-region}
-  TENCENT_COS_SCHEME: ${TENCENT_COS_SCHEME:-your-scheme}
-  OCI_ENDPOINT: ${OCI_ENDPOINT:-https://objectstorage.us-ashburn-1.oraclecloud.com}
-  OCI_BUCKET_NAME: ${OCI_BUCKET_NAME:-your-bucket-name}
-  OCI_ACCESS_KEY: ${OCI_ACCESS_KEY:-your-access-key}
-  OCI_SECRET_KEY: ${OCI_SECRET_KEY:-your-secret-key}
-  OCI_REGION: ${OCI_REGION:-us-ashburn-1}
-  HUAWEI_OBS_BUCKET_NAME: ${HUAWEI_OBS_BUCKET_NAME:-your-bucket-name}
-  HUAWEI_OBS_SECRET_KEY: ${HUAWEI_OBS_SECRET_KEY:-your-secret-key}
-  HUAWEI_OBS_ACCESS_KEY: ${HUAWEI_OBS_ACCESS_KEY:-your-access-key}
-  HUAWEI_OBS_SERVER: ${HUAWEI_OBS_SERVER:-your-server-url}
-  VOLCENGINE_TOS_BUCKET_NAME: ${VOLCENGINE_TOS_BUCKET_NAME:-your-bucket-name}
-  VOLCENGINE_TOS_SECRET_KEY: ${VOLCENGINE_TOS_SECRET_KEY:-your-secret-key}
-  VOLCENGINE_TOS_ACCESS_KEY: ${VOLCENGINE_TOS_ACCESS_KEY:-your-access-key}
-  VOLCENGINE_TOS_ENDPOINT: ${VOLCENGINE_TOS_ENDPOINT:-your-server-url}
-  VOLCENGINE_TOS_REGION: ${VOLCENGINE_TOS_REGION:-your-region}
-  BAIDU_OBS_BUCKET_NAME: ${BAIDU_OBS_BUCKET_NAME:-your-bucket-name}
-  BAIDU_OBS_SECRET_KEY: ${BAIDU_OBS_SECRET_KEY:-your-secret-key}
-  BAIDU_OBS_ACCESS_KEY: ${BAIDU_OBS_ACCESS_KEY:-your-access-key}
-  BAIDU_OBS_ENDPOINT: ${BAIDU_OBS_ENDPOINT:-your-server-url}
-  SUPABASE_BUCKET_NAME: ${SUPABASE_BUCKET_NAME:-your-bucket-name}
-  SUPABASE_API_KEY: ${SUPABASE_API_KEY:-your-access-key}
-  SUPABASE_URL: ${SUPABASE_URL:-your-server-url}
   VECTOR_STORE: ${VECTOR_STORE:-weaviate}
   WEAVIATE_ENDPOINT: ${WEAVIATE_ENDPOINT:-http://weaviate:8080}
   WEAVIATE_API_KEY: ${WEAVIATE_API_KEY:-WVF5YThaHlkYwhGUSmCRgsX3tD5ngdN8pkih}
-  MILVUS_URI: ${MILVUS_URI:-http://127.0.0.1:19530}
-  MILVUS_TOKEN: ${MILVUS_TOKEN:-}
-  MILVUS_USER: ${MILVUS_USER:-root}
-  MILVUS_PASSWORD: ${MILVUS_PASSWORD:-Milvus}
-  MILVUS_ENABLE_HYBRID_SEARCH: ${MILVUS_ENABLE_HYBRID_SEARCH:-false}
-  MILVUS_AUTHORIZATION_ENABLED: ${MILVUS_AUTHORIZATION_ENABLED:-true}
+  WEAVIATE_PERSISTENCE_DATA_PATH: ${WEAVIATE_PERSISTENCE_DATA_PATH:-/var/lib/weaviate}
+  WEAVIATE_QUERY_DEFAULTS_LIMIT: ${WEAVIATE_QUERY_DEFAULTS_LIMIT:-25}
+  WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: ${WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED:-true}
+  WEAVIATE_DEFAULT_VECTORIZER_MODULE: ${WEAVIATE_DEFAULT_VECTORIZER_MODULE:-none}
+  WEAVIATE_CLUSTER_HOSTNAME: ${WEAVIATE_CLUSTER_HOSTNAME:-node1}
+  WEAVIATE_AUTHENTICATION_APIKEY_ENABLED: ${WEAVIATE_AUTHENTICATION_APIKEY_ENABLED:-true}
+  WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS: ${WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS:-${WEAVIATE_API_KEY}}
+  WEAVIATE_AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_AUTHENTICATION_APIKEY_USERS:-hello@dify.ai}
+  WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
+  WEAVIATE_AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
+  PGUSER: ${PGUSER:-${DB_USERNAME}}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${DB_PASSWORD}}
+  POSTGRES_DB: ${POSTGRES_DB:-${DB_DATABASE}}
+  PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
   UPLOAD_FILE_SIZE_LIMIT: ${UPLOAD_FILE_SIZE_LIMIT:-15}
   UPLOAD_FILE_BATCH_LIMIT: ${UPLOAD_FILE_BATCH_LIMIT:-5}
-  ETL_TYPE: ${ETL_TYPE:-dify}
-  UNSTRUCTURED_API_URL: ${UNSTRUCTURED_API_URL:-}
+  ETL_TYPE: ${ETL_TYPE:-Unstructured}
+  UNSTRUCTURED_API_URL: ${UNSTRUCTURED_API_URL:-http://unstructured:8000/general/v0/general}
   UNSTRUCTURED_API_KEY: ${UNSTRUCTURED_API_KEY:-}
   SCARF_NO_ANALYTICS: ${SCARF_NO_ANALYTICS:-true}
   PROMPT_GENERATION_MAX_TOKENS: ${PROMPT_GENERATION_MAX_TOKENS:-512}
@@ -174,55 +137,6 @@ x-shared-env: &shared-api-worker-env
   SMTP_PASSWORD: ${SMTP_PASSWORD:-}
   SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
   SMTP_OPPORTUNISTIC_TLS: ${SMTP_OPPORTUNISTIC_TLS:-false}
-  NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
-  NGINX_HTTPS_ENABLED: ${NGINX_HTTPS_ENABLED:-false}
-  NGINX_PORT: ${NGINX_PORT:-80}
-  NGINX_SSL_PORT: ${NGINX_SSL_PORT:-443}
-  NGINX_SSL_CERT_FILENAME: ${NGINX_SSL_CERT_FILENAME:-dify.crt}
-  NGINX_SSL_CERT_KEY_FILENAME: ${NGINX_SSL_CERT_KEY_FILENAME:-dify.key}
-  NGINX_SSL_PROTOCOLS: ${NGINX_SSL_PROTOCOLS:-TLSv1.1 TLSv1.2 TLSv1.3}
-  NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-auto}
-  NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-15M}
-  NGINX_KEEPALIVE_TIMEOUT: ${NGINX_KEEPALIVE_TIMEOUT:-65}
-  NGINX_PROXY_READ_TIMEOUT: ${NGINX_PROXY_READ_TIMEOUT:-3600s}
-  NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
-  NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-false}
-  SSRF_HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
-  SSRF_COREDUMP_DIR: ${SSRF_COREDUMP_DIR:-/var/spool/squid}
-  SSRF_REVERSE_PROXY_PORT: ${SSRF_REVERSE_PROXY_PORT:-8194}
-  SSRF_SANDBOX_HOST: ${SSRF_SANDBOX_HOST:-sandbox}
-  SSRF_PROXY_HTTP_URL: ${SSRF_PROXY_HTTP_URL:-http://ssrf_proxy:3128}
-  SSRF_PROXY_HTTPS_URL: ${SSRF_PROXY_HTTPS_URL:-http://ssrf_proxy:3128}
-  CERTBOT_EMAIL: ${CERTBOT_EMAIL:-your_email@example.com}
-  CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-your_domain.com}
-  CERTBOT_OPTIONS: ${CERTBOT_OPTIONS:-}
-  TEXT_GENERATION_TIMEOUT_MS: ${TEXT_GENERATION_TIMEOUT_MS:-60000}
-  PGUSER: ${PGUSER:-${DB_USERNAME}}
-  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-${DB_PASSWORD}}
-  POSTGRES_DB: ${POSTGRES_DB:-${DB_DATABASE}}
-  PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
-  SANDBOX_API_KEY: ${SANDBOX_API_KEY:-dify-sandbox}
-  SANDBOX_GIN_MODE: ${SANDBOX_GIN_MODE:-release}
-  SANDBOX_WORKER_TIMEOUT: ${SANDBOX_WORKER_TIMEOUT:-15}
-  SANDBOX_ENABLE_NETWORK: ${SANDBOX_ENABLE_NETWORK:-true}
-  SANDBOX_HTTP_PROXY: ${SANDBOX_HTTP_PROXY:-${SSRF_PROXY_HTTP_URL}}
-  SANDBOX_HTTPS_PROXY: ${SANDBOX_HTTPS_PROXY:-${SSRF_PROXY_HTTPS_URL}}
-  SANDBOX_PORT: ${SANDBOX_PORT:-8194}
-  WEAVIATE_PERSISTENCE_DATA_PATH: ${WEAVIATE_PERSISTENCE_DATA_PATH:-/var/lib/weaviate}
-  WEAVIATE_QUERY_DEFAULTS_LIMIT: ${WEAVIATE_QUERY_DEFAULTS_LIMIT:-25}
-  WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED: ${WEAVIATE_AUTHENTICATION_ANONYMOUS_ACCESS_ENABLED:-true}
-  WEAVIATE_DEFAULT_VECTORIZER_MODULE: ${WEAVIATE_DEFAULT_VECTORIZER_MODULE:-none}
-  WEAVIATE_CLUSTER_HOSTNAME: ${WEAVIATE_CLUSTER_HOSTNAME:-node1}
-  WEAVIATE_AUTHENTICATION_APIKEY_ENABLED: ${WEAVIATE_AUTHENTICATION_APIKEY_ENABLED:-true}
-  WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS: ${WEAVIATE_AUTHENTICATION_APIKEY_ALLOWED_KEYS:-${WEAVIATE_API_KEY}}
-  WEAVIATE_AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_AUTHENTICATION_APIKEY_USERS:-hello@dify.ai}
-  WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
-  WEAVIATE_AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
-  ETCD_AUTO_COMPACTION_MODE: ${ETCD_AUTO_COMPACTION_MODE:-revision}
-  ETCD_AUTO_COMPACTION_RETENTION: ${ETCD_AUTO_COMPACTION_RETENTION:-1000}
-  ETCD_QUOTA_BACKEND_BYTES: ${ETCD_QUOTA_BACKEND_BYTES:-4294967296}
-  ETCD_SNAPSHOT_COUNT: ${ETCD_SNAPSHOT_COUNT:-50000}
-  ETCD_ENDPOINTS: ${ETCD_ENDPOINTS:-etcd:2379}
   INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: ${INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH:-4000}
   INVITE_EXPIRY_HOURS: ${INVITE_EXPIRY_HOURS:-72}
   RESET_PASSWORD_TOKEN_EXPIRY_MINUTES: ${RESET_PASSWORD_TOKEN_EXPIRY_MINUTES:-5}
@@ -248,8 +162,40 @@ x-shared-env: &shared-api-worker-env
   WORKFLOW_FILE_UPLOAD_LIMIT: ${WORKFLOW_FILE_UPLOAD_LIMIT:-10}
   HTTP_REQUEST_NODE_MAX_BINARY_SIZE: ${HTTP_REQUEST_NODE_MAX_BINARY_SIZE:-10485760}
   HTTP_REQUEST_NODE_MAX_TEXT_SIZE: ${HTTP_REQUEST_NODE_MAX_TEXT_SIZE:-1048576}
+  NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
+  NGINX_HTTPS_ENABLED: ${NGINX_HTTPS_ENABLED:-false}
+  NGINX_PORT: ${NGINX_PORT:-80}
+  NGINX_SSL_PORT: ${NGINX_SSL_PORT:-443}
+  NGINX_SSL_CERT_FILENAME: ${NGINX_SSL_CERT_FILENAME:-dify.crt}
+  NGINX_SSL_CERT_KEY_FILENAME: ${NGINX_SSL_CERT_KEY_FILENAME:-dify.key}
+  NGINX_SSL_PROTOCOLS: ${NGINX_SSL_PROTOCOLS:-TLSv1.1 TLSv1.2 TLSv1.3}
+  NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-auto}
+  NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-15M}
+  NGINX_KEEPALIVE_TIMEOUT: ${NGINX_KEEPALIVE_TIMEOUT:-65}
+  NGINX_PROXY_READ_TIMEOUT: ${NGINX_PROXY_READ_TIMEOUT:-3600s}
+  NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
+  NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-false}
   EXPOSE_NGINX_PORT: ${EXPOSE_NGINX_PORT:-80}
   EXPOSE_NGINX_SSL_PORT: ${EXPOSE_NGINX_SSL_PORT:-443}
+  SSRF_HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
+  SSRF_COREDUMP_DIR: ${SSRF_COREDUMP_DIR:-/var/spool/squid}
+  SSRF_REVERSE_PROXY_PORT: ${SSRF_REVERSE_PROXY_PORT:-8194}
+  SSRF_SANDBOX_HOST: ${SSRF_SANDBOX_HOST:-sandbox}
+  SSRF_DEFAULT_TIME_OUT: ${SSRF_DEFAULT_TIME_OUT:-5}
+  SSRF_DEFAULT_CONNECT_TIME_OUT: ${SSRF_DEFAULT_CONNECT_TIME_OUT:-5}
+  SSRF_DEFAULT_READ_TIME_OUT: ${SSRF_DEFAULT_READ_TIME_OUT:-5}
+  SSRF_DEFAULT_WRITE_TIME_OUT: ${SSRF_DEFAULT_WRITE_TIME_OUT:-5}
+  SSRF_PROXY_HTTP_URL: ${SSRF_PROXY_HTTP_URL:-http://ssrf_proxy:3128}
+  SSRF_PROXY_HTTPS_URL: ${SSRF_PROXY_HTTPS_URL:-http://ssrf_proxy:3128}
+  SANDBOX_API_KEY: ${SANDBOX_API_KEY:-dify-sandbox}
+  SANDBOX_GIN_MODE: ${SANDBOX_GIN_MODE:-release}
+  SANDBOX_WORKER_TIMEOUT: ${SANDBOX_WORKER_TIMEOUT:-15}
+  SANDBOX_ENABLE_NETWORK: ${SANDBOX_ENABLE_NETWORK:-true}
+  SANDBOX_HTTP_PROXY: ${SANDBOX_HTTP_PROXY:-${SSRF_PROXY_HTTP_URL}}
+  SANDBOX_HTTPS_PROXY: ${SANDBOX_HTTPS_PROXY:-${SSRF_PROXY_HTTPS_URL}}
+  SANDBOX_PORT: ${SANDBOX_PORT:-8194}
+  LOOP_NODE_MAX_COUNT: ${LOOP_NODE_MAX_COUNT:-100}
+  TEXT_GENERATION_TIMEOUT_MS: ${TEXT_GENERATION_TIMEOUT_MS:-60000}
   POSITION_TOOL_PINS: ${POSITION_TOOL_PINS:-}
   POSITION_TOOL_INCLUDES: ${POSITION_TOOL_INCLUDES:-}
   POSITION_TOOL_EXCLUDES: ${POSITION_TOOL_EXCLUDES:-}
@@ -259,12 +205,30 @@ x-shared-env: &shared-api-worker-env
   CSP_WHITELIST: ${CSP_WHITELIST:-}
   MAX_SUBMIT_COUNT: ${MAX_SUBMIT_COUNT:-100}
   TOP_K_MAX_VALUE: ${TOP_K_MAX_VALUE:-10}
+  DB_PLUGIN_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
+  EXPOSE_PLUGIN_DAEMON_PORT: ${EXPOSE_PLUGIN_DAEMON_PORT:-5002}
+  PLUGIN_DAEMON_PORT: ${PLUGIN_DAEMON_PORT:-5002}
+  PLUGIN_DAEMON_KEY: ${PLUGIN_DAEMON_KEY:-lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi}
+  PLUGIN_DAEMON_URL: ${PLUGIN_DAEMON_URL:-http://plugin_daemon:5002}
+  PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+  PLUGIN_PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
+  PLUGIN_DEBUGGING_HOST: ${PLUGIN_DEBUGGING_HOST:-0.0.0.0}
+  PLUGIN_DEBUGGING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
+  EXPOSE_PLUGIN_DEBUGGING_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-localhost}
+  EXPOSE_PLUGIN_DEBUGGING_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
+  PLUGIN_DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+  PLUGIN_DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
+  ENDPOINT_URL_TEMPLATE: ${ENDPOINT_URL_TEMPLATE:-http://localhost/e/{hook_id}}
+  MARKETPLACE_ENABLED: ${MARKETPLACE_ENABLED:-true}
+  MARKETPLACE_API_URL: ${MARKETPLACE_API_URL:-https://marketplace.dify.ai}
+  FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
 
+name: local-ai
 services:
   # API service
   api:
     container_name: local-ai.dify-api
-    image: langgenius/dify-api:0.15.3
+    image: langgenius/dify-api:1.0.0
     restart: unless-stopped
     environment:
       # Use the shared environment variables.
@@ -274,6 +238,10 @@ services:
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
+      PLUGIN_REMOTE_INSTALL_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-localhost}
+      PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
+      PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
     depends_on:
       - db
       - redis
@@ -289,7 +257,7 @@ services:
   # The Celery worker for processing the queue.
   worker:
     container_name: local-ai.dify-worker
-    image: langgenius/dify-api:0.15.3
+    image: langgenius/dify-api:1.0.0
     restart: unless-stopped
     environment:
       # Use the shared environment variables.
@@ -299,6 +267,8 @@ services:
       SENTRY_DSN: ${API_SENTRY_DSN:-}
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
+      PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
     depends_on:
       - db
       - redis
@@ -313,7 +283,7 @@ services:
   # Frontend web application.
   web:
     container_name: local-ai.dify-web
-    image: langgenius/dify-web:0.15.3
+    image: langgenius/dify-web:1.0.0
     restart: unless-stopped
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
@@ -322,7 +292,12 @@ services:
       NEXT_TELEMETRY_DISABLED: ${NEXT_TELEMETRY_DISABLED:-0}
       TEXT_GENERATION_TIMEOUT_MS: ${TEXT_GENERATION_TIMEOUT_MS:-60000}
       CSP_WHITELIST: ${CSP_WHITELIST:-}
+      MARKETPLACE_API_URL: ${MARKETPLACE_API_URL:-https://marketplace.dify.ai}
+      MARKETPLACE_URL: ${MARKETPLACE_URL:-https://marketplace.dify.ai}
       TOP_K_MAX_VALUE: ${TOP_K_MAX_VALUE:-}
+      INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH: ${INDEXING_MAX_SEGMENTATION_TOKENS_LENGTH:-}
+      PM2_INSTANCES: ${PM2_INSTANCES:-2}
+      LOOP_NODE_MAX_COUNT: ${LOOP_NODE_MAX_COUNT:-100}
 
   # The DifySandbox
   sandbox:
@@ -339,34 +314,35 @@ services:
       SANDBOX_PORT: ${SANDBOX_PORT:-8194}
     volumes:
       - dify_sandbox_dependencies:/dependencies
+      - dify_sandbox_conf:/conf
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8194/health"]
     networks:
       - ssrf_proxy_network
 
-  # The postgres database.
-  db:
-    container_name: local-ai.postgres
-    image: postgres:15-alpine
-    restart: unless-stopped
+  # plugin daemon
+  plugin_daemon:
+    container_name: local-ai.dify-plugin-daemon
+    image: langgenius/dify-plugin-daemon:0.0.3-local
+    restart: always
     environment:
-      PGUSER: ${PGUSER:-postgres}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
-      POSTGRES_DB: ${POSTGRES_DB:-dify}
-      PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
-    command: >
-      postgres -c 'max_connections=${POSTGRES_MAX_CONNECTIONS:-100}'
-               -c 'shared_buffers=${POSTGRES_SHARED_BUFFERS:-128MB}'
-               -c 'work_mem=${POSTGRES_WORK_MEM:-4MB}'
-               -c 'maintenance_work_mem=${POSTGRES_MAINTENANCE_WORK_MEM:-64MB}'
-               -c 'effective_cache_size=${POSTGRES_EFFECTIVE_CACHE_SIZE:-4096MB}'
+      # Use the shared environment variables.
+      <<: *shared-api-worker-env
+      DB_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
+      SERVER_PORT: ${PLUGIN_DAEMON_PORT:-5002}
+      SERVER_KEY: ${PLUGIN_DAEMON_KEY:-lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi}
+      MAX_PLUGIN_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
+      PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
+      DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
+      DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+      PLUGIN_REMOTE_INSTALLING_HOST: ${PLUGIN_DEBUGGING_HOST:-0.0.0.0}
+      PLUGIN_REMOTE_INSTALLING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
+      PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
+      FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
+    ports:
+      - "${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD", "pg_isready"]
-      interval: 1s
-      timeout: 3s
-      retries: 30
+      - ./volumes/plugin_daemon:/app/storage
 
   # ssrf_proxy server
   # for more information, please refer to
@@ -443,30 +419,10 @@ services:
       - "${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}"
       - "${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}"
 
-  # The redis cache.
-  redis:
-    container_name: local-ai.redis
-    image: redis:7-alpine
-    restart: unless-stopped
-    environment:
-      REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
-    volumes:
-      - redis_data:/data
-    # Set the redis password when startup redis server.
-    command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456} --maxmemory-policy noeviction
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 3s
-      timeout: 10s
-      retries: 10
-
   # The Weaviate vector store.
   weaviate:
     container_name: local-ai.weaviate
     image: semitechnologies/weaviate:1.19.0
-    profiles:
-      - ""
-      - weaviate
     restart: unless-stopped
     volumes:
       - weaviate_data:/var/lib/weaviate
@@ -483,6 +439,49 @@ services:
       AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_AUTHENTICATION_APIKEY_USERS:-hello@dify.ai}
       AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
       AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
+
+  # The postgres database.
+  db:
+    container_name: local-ai.postgres
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      PGUSER: ${PGUSER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
+      POSTGRES_DB: ${POSTGRES_DB:-dify}
+      PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
+    command: >
+      postgres -c 'max_connections=${POSTGRES_MAX_CONNECTIONS:-100}'
+               -c 'shared_buffers=${POSTGRES_SHARED_BUFFERS:-128MB}'
+               -c 'work_mem=${POSTGRES_WORK_MEM:-4MB}'
+               -c 'maintenance_work_mem=${POSTGRES_MAINTENANCE_WORK_MEM:-64MB}'
+               -c 'effective_cache_size=${POSTGRES_EFFECTIVE_CACHE_SIZE:-4096MB}'
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready"]
+      interval: 1s
+      timeout: 3s
+      retries: 30
+    ports:
+      - "${EXPOSE_DB_PORT:-5432}:5432"
+
+  # The redis cache.
+  redis:
+    container_name: local-ai.redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    environment:
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
+    volumes:
+      - redis_data:/data
+    # Set the redis password when startup redis server.
+    command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456} --maxmemory-policy noeviction
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 10s
+      retries: 10
 
   # The S3 storage service.
   minio:
@@ -505,13 +504,10 @@ services:
       - 8090:9000
       - 8091:9001
 
-  # unstructured.
-  # (if used, you need to set ETL_TYPE to Unstructured in the api & worker service.)
+  # The ETL (Extract Transform Load) engine used by doc extractor node
   unstructured:
     container_name: local-ai.unstructured
     image: downloads.unstructured.io/unstructured-io/unstructured-api:latest
-    profiles:
-      - unstructured
     restart: unless-stopped
     volumes:
       - unstructured_data:/app/data
@@ -541,7 +537,7 @@ services:
 
   langfuse-worker:
     container_name: local-ai.langfuse-worker
-    image: langfuse/langfuse-worker:3
+    image: langfuse/langfuse-worker:3.28.3
     restart: unless-stopped
     depends_on:
       - db
@@ -586,7 +582,7 @@ services:
 
   langfuse-web:
     container_name: local-ai.langfuse-web
-    image: langfuse/langfuse:3
+    image: langfuse/langfuse:3.28.3
     restart: unless-stopped
     depends_on:
       - db
@@ -616,6 +612,8 @@ services:
   ollama:
     container_name: local-ai.ollama
     image: ollama/ollama:${OLLAMA_DOCKER_TAG-latest}
+    profiles:
+      - ollama
     restart: unless-stopped
     ports:
       - ${OLLAMA_WEBAPI_PORT-11434}:11434
@@ -629,20 +627,6 @@ services:
     #         - driver: nvidia
     #           count: all
     #           capabilities: [gpu]
-
-  open-webui:
-    container_name: local-ai.ollama-ui
-    image: ghcr.io/open-webui/open-webui:${WEBUI_DOCKER_TAG-main}
-    restart: unless-stopped
-    ports:
-      - ${OPEN_WEBUI_PORT-7080}:8080
-    environment:
-      OLLAMA_BASE_URL: http://ollama:${OLLAMA_WEBAPI_PORT-11434}
-      WEBUI_SECRET_KEY: ${OPEN_WEBUI_CODE:-dh78eRIRBSN2r3cWHjToFBy1FTAbKdzYRMyWG7oKvj0=}
-    volumes:
-      - ollama_ui_data:/app/backend/data
-    extra_hosts:
-      - host.docker.internal:host-gateway
 
 networks:
   # create a network between sandbox, api and ssrf_proxy, and can not access outside.
@@ -662,6 +646,12 @@ volumes:
     driver_opts:
       type: none
       device: ./volumes/sandbox/dependencies
+      o: bind
+  dify_sandbox_conf:
+    driver: local
+    driver_opts:
+      type: none
+      device: ./volumes/sandbox/conf
       o: bind
   ssrf_proxy_logs:
     driver: local
@@ -723,11 +713,3 @@ volumes:
       type: none
       device: ./volumes/ollama
       o: bind
-  ollama_ui_data:
-    driver: local
-    driver_opts:
-      type: none
-      device: ./volumes/open-webui
-      o: bind
-
-name: local-ai

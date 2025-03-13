@@ -59,7 +59,7 @@ x-shared-env: &shared-api-worker-env
   REDIS_HOST: ${REDIS_HOST:-redis}
   REDIS_PORT: ${REDIS_PORT:-6379}
   REDIS_USERNAME: ${REDIS_USERNAME:-}
-  REDIS_PASSWORD: ${REDIS_PASSWORD:-difyai123456}
+  REDIS_PASSWORD: ${REDIS_PASSWORD:-sk-your-redis-password}
   REDIS_USE_SSL: ${REDIS_USE_SSL:-false}
   REDIS_DB: ${REDIS_DB:-0}
   REDIS_USE_SENTINEL: ${REDIS_USE_SENTINEL:-false}
@@ -72,7 +72,7 @@ x-shared-env: &shared-api-worker-env
   REDIS_CLUSTERS: ${REDIS_CLUSTERS:-}
   REDIS_CLUSTERS_PASSWORD: ${REDIS_CLUSTERS_PASSWORD:-}
   CELERY_REDIS_DB: ${CELERY_REDIS_DB:-1}
-  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://:difyai123456@redis:6379/${CELERY_REDIS_DB}}
+  CELERY_BROKER_URL: ${CELERY_BROKER_URL:-redis://${REDIS_USERNAME}:${REDIS_PASSWORD}@${REDIS_HOST}:${REDIS_PORT}/${CELERY_REDIS_DB}}
   BROKER_USE_SSL: ${BROKER_USE_SSL:-false}
   CELERY_USE_SENTINEL: ${CELERY_USE_SENTINEL:-false}
   CELERY_SENTINEL_MASTER_NAME: ${CELERY_SENTINEL_MASTER_NAME:-}
@@ -187,7 +187,7 @@ x-shared-env: &shared-api-worker-env
   SSRF_DEFAULT_WRITE_TIME_OUT: ${SSRF_DEFAULT_WRITE_TIME_OUT:-5}
   SSRF_PROXY_HTTP_URL: ${SSRF_PROXY_HTTP_URL:-http://ssrf_proxy:3128}
   SSRF_PROXY_HTTPS_URL: ${SSRF_PROXY_HTTPS_URL:-http://ssrf_proxy:3128}
-  SANDBOX_API_KEY: ${SANDBOX_API_KEY:-dify-sandbox}
+  SANDBOX_API_KEY: ${SANDBOX_API_KEY:-sk-your-sandbox-key}
   SANDBOX_GIN_MODE: ${SANDBOX_GIN_MODE:-release}
   SANDBOX_WORKER_TIMEOUT: ${SANDBOX_WORKER_TIMEOUT:-15}
   SANDBOX_ENABLE_NETWORK: ${SANDBOX_ENABLE_NETWORK:-true}
@@ -208,7 +208,7 @@ x-shared-env: &shared-api-worker-env
   DB_PLUGIN_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
   EXPOSE_PLUGIN_DAEMON_PORT: ${EXPOSE_PLUGIN_DAEMON_PORT:-5002}
   PLUGIN_DAEMON_PORT: ${PLUGIN_DAEMON_PORT:-5002}
-  PLUGIN_DAEMON_KEY: ${PLUGIN_DAEMON_KEY:-lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi}
+  PLUGIN_DAEMON_KEY: ${PLUGIN_DAEMON_KEY:-sk-your-plugin-daemon-key}
   PLUGIN_DAEMON_URL: ${PLUGIN_DAEMON_URL:-http://plugin_daemon:5002}
   PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
   PLUGIN_PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
@@ -216,20 +216,30 @@ x-shared-env: &shared-api-worker-env
   PLUGIN_DEBUGGING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
   EXPOSE_PLUGIN_DEBUGGING_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-localhost}
   EXPOSE_PLUGIN_DEBUGGING_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
-  PLUGIN_DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+  PLUGIN_DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-sk-your-plugin-inner-key}
   PLUGIN_DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
   ENDPOINT_URL_TEMPLATE: ${ENDPOINT_URL_TEMPLATE:-http://localhost/e/{hook_id}}
   MARKETPLACE_ENABLED: ${MARKETPLACE_ENABLED:-true}
   MARKETPLACE_API_URL: ${MARKETPLACE_API_URL:-https://marketplace.dify.ai}
   FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
+  PLUGIN_PYTHON_ENV_INIT_TIMEOUT: ${PLUGIN_PYTHON_ENV_INIT_TIMEOUT:-120}
+  PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
+  PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
 
 name: local-ai
 services:
   # API service
   api:
     container_name: local-ai.dify-api
-    image: langgenius/dify-api:1.0.0
+    image: langgenius/dify-api:1.0.1
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
@@ -241,11 +251,7 @@ services:
       PLUGIN_REMOTE_INSTALL_HOST: ${EXPOSE_PLUGIN_DEBUGGING_HOST:-localhost}
       PLUGIN_REMOTE_INSTALL_PORT: ${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
-      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
-    depends_on:
-      - db
-      - redis
-      - minio
+      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-sk-your-plugin-inner-key}
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - dify_api_storage:/app/api/storage
@@ -257,8 +263,15 @@ services:
   # The Celery worker for processing the queue.
   worker:
     container_name: local-ai.dify-worker
-    image: langgenius/dify-api:1.0.0
+    image: langgenius/dify-api:1.0.1
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
@@ -268,11 +281,7 @@ services:
       SENTRY_TRACES_SAMPLE_RATE: ${API_SENTRY_TRACES_SAMPLE_RATE:-1.0}
       SENTRY_PROFILES_SAMPLE_RATE: ${API_SENTRY_PROFILES_SAMPLE_RATE:-1.0}
       PLUGIN_MAX_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
-      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
-    depends_on:
-      - db
-      - redis
-      - minio
+      INNER_API_KEY_FOR_PLUGIN: ${PLUGIN_DIFY_INNER_API_KEY:-sk-your-plugin-inner-key}
     volumes:
       # Mount the storage directory to the container, for storing user files.
       - dify_api_storage:/app/api/storage
@@ -283,7 +292,7 @@ services:
   # Frontend web application.
   web:
     container_name: local-ai.dify-web
-    image: langgenius/dify-web:1.0.0
+    image: langgenius/dify-web:1.0.1
     restart: unless-stopped
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
@@ -305,7 +314,7 @@ services:
     image: langgenius/dify-sandbox:0.2.10
     restart: unless-stopped
     environment:
-      API_KEY: ${SANDBOX_API_KEY:-dify-sandbox}
+      API_KEY: ${SANDBOX_API_KEY:-sk-your-sandbox-key}
       GIN_MODE: ${SANDBOX_GIN_MODE:-release}
       WORKER_TIMEOUT: ${SANDBOX_WORKER_TIMEOUT:-15}
       ENABLE_NETWORK: ${SANDBOX_ENABLE_NETWORK:-true}
@@ -323,26 +332,32 @@ services:
   # plugin daemon
   plugin_daemon:
     container_name: local-ai.dify-plugin-daemon
-    image: langgenius/dify-plugin-daemon:0.0.3-local
-    restart: always
+    image: langgenius/dify-plugin-daemon:0.0.4-local
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
       DB_DATABASE: ${DB_PLUGIN_DATABASE:-dify_plugin}
       SERVER_PORT: ${PLUGIN_DAEMON_PORT:-5002}
-      SERVER_KEY: ${PLUGIN_DAEMON_KEY:-lYkiYYT6owG+71oLerGzA7GXCgOT++6ovaezWAjpCjf+Sjc3ZtU+qUEi}
+      SERVER_KEY: ${PLUGIN_DAEMON_KEY:-sk-your-plugin-daemon-key}
       MAX_PLUGIN_PACKAGE_SIZE: ${PLUGIN_MAX_PACKAGE_SIZE:-52428800}
       PPROF_ENABLED: ${PLUGIN_PPROF_ENABLED:-false}
       DIFY_INNER_API_URL: ${PLUGIN_DIFY_INNER_API_URL:-http://api:5001}
-      DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-QaHbTe77CtuXmsfyhR7+vRjI/+XbV1AaFy691iy+kGDv2Jvy0/eAh8Y1}
+      DIFY_INNER_API_KEY: ${PLUGIN_DIFY_INNER_API_KEY:-sk-your-plugin-inner-key}
       PLUGIN_REMOTE_INSTALLING_HOST: ${PLUGIN_DEBUGGING_HOST:-0.0.0.0}
       PLUGIN_REMOTE_INSTALLING_PORT: ${PLUGIN_DEBUGGING_PORT:-5003}
       PLUGIN_WORKING_PATH: ${PLUGIN_WORKING_PATH:-/app/storage/cwd}
       FORCE_VERIFYING_SIGNATURE: ${FORCE_VERIFYING_SIGNATURE:-true}
-    ports:
-      - "${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
+      PYTHON_ENV_INIT_TIMEOUT: ${PLUGIN_PYTHON_ENV_INIT_TIMEOUT:-120}
+      PLUGIN_MAX_EXECUTION_TIMEOUT: ${PLUGIN_MAX_EXECUTION_TIMEOUT:-600}
+      PIP_MIRROR_URL: ${PIP_MIRROR_URL:-}
     volumes:
       - ./volumes/plugin_daemon:/app/storage
+    ports:
+      - "${EXPOSE_PLUGIN_DEBUGGING_PORT:-5003}:${PLUGIN_DEBUGGING_PORT:-5003}"
 
   # ssrf_proxy server
   # for more information, please refer to
@@ -351,6 +366,13 @@ services:
     container_name: local-ai.ssrf_proxy
     image: ubuntu/squid:latest
     restart: unless-stopped
+    environment:
+      # pls clearly modify the squid env vars to fit your network environment.
+      HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
+      COREDUMP_DIR: ${SSRF_COREDUMP_DIR:-/var/spool/squid}
+      REVERSE_PROXY_PORT: ${SSRF_REVERSE_PROXY_PORT:-8194}
+      SANDBOX_HOST: ${SSRF_SANDBOX_HOST:-sandbox}
+      SANDBOX_PORT: ${SANDBOX_PORT:-8194}
     volumes:
       - ./ssrf_proxy/squid.conf.template:/etc/squid/squid.conf.template
       - ./ssrf_proxy/docker-entrypoint.sh:/docker-entrypoint-mount.sh
@@ -362,13 +384,6 @@ services:
         "-c",
         "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
       ]
-    environment:
-      # pls clearly modify the squid env vars to fit your network environment.
-      HTTP_PORT: ${SSRF_HTTP_PORT:-3128}
-      COREDUMP_DIR: ${SSRF_COREDUMP_DIR:-/var/spool/squid}
-      REVERSE_PROXY_PORT: ${SSRF_REVERSE_PROXY_PORT:-8194}
-      SANDBOX_HOST: ${SSRF_SANDBOX_HOST:-sandbox}
-      SANDBOX_PORT: ${SANDBOX_PORT:-8194}
     networks:
       - ssrf_proxy_network
       - default
@@ -379,22 +394,9 @@ services:
     container_name: local-ai.nginx
     image: nginx:latest
     restart: unless-stopped
-    volumes:
-      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
-      - ./nginx/proxy.conf.template:/etc/nginx/proxy.conf.template
-      - ./nginx/https.conf.template:/etc/nginx/https.conf.template
-      - ./nginx/conf.d:/etc/nginx/conf.d
-      - ./nginx/docker-entrypoint.sh:/docker-entrypoint-mount.sh
-      - ./nginx/ssl:/etc/ssl # cert dir (legacy)
-      - ./volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
-      - ./volumes/certbot/conf:/etc/letsencrypt
-      - ./volumes/certbot/www:/var/www/html
-    entrypoint:
-      [
-        "sh",
-        "-c",
-        "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
-      ]
+    depends_on:
+      - api
+      - web
     environment:
       NGINX_SERVER_NAME: ${NGINX_SERVER_NAME:-_}
       NGINX_HTTPS_ENABLED: ${NGINX_HTTPS_ENABLED:-false}
@@ -412,9 +414,22 @@ services:
       NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
       NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-false}
       CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-}
-    depends_on:
-      - api
-      - web
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/nginx.conf.template
+      - ./nginx/proxy.conf.template:/etc/nginx/proxy.conf.template
+      - ./nginx/https.conf.template:/etc/nginx/https.conf.template
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./nginx/docker-entrypoint.sh:/docker-entrypoint-mount.sh
+      - ./nginx/ssl:/etc/ssl # cert dir (legacy)
+      - ./volumes/certbot/conf/live:/etc/letsencrypt/live # cert dir (with certbot container)
+      - ./volumes/certbot/conf:/etc/letsencrypt
+      - ./volumes/certbot/www:/var/www/html
+    entrypoint:
+      [
+        "sh",
+        "-c",
+        "cp /docker-entrypoint-mount.sh /docker-entrypoint.sh && sed -i 's/\r$$//' /docker-entrypoint.sh && chmod +x /docker-entrypoint.sh && /docker-entrypoint.sh",
+      ]
     ports:
       - "${EXPOSE_NGINX_PORT:-80}:${NGINX_PORT:-80}"
       - "${EXPOSE_NGINX_SSL_PORT:-443}:${NGINX_SSL_PORT:-443}"
@@ -424,8 +439,6 @@ services:
     container_name: local-ai.weaviate
     image: semitechnologies/weaviate:1.19.0
     restart: unless-stopped
-    volumes:
-      - weaviate_data:/var/lib/weaviate
     environment:
       # The Weaviate configurations
       # You can refer to the [Weaviate](https://weaviate.io/developers/weaviate/config-refs/env-vars) documentation for more information.
@@ -439,6 +452,8 @@ services:
       AUTHENTICATION_APIKEY_USERS: ${WEAVIATE_AUTHENTICATION_APIKEY_USERS:-hello@dify.ai}
       AUTHORIZATION_ADMINLIST_ENABLED: ${WEAVIATE_AUTHORIZATION_ADMINLIST_ENABLED:-true}
       AUTHORIZATION_ADMINLIST_USERS: ${WEAVIATE_AUTHORIZATION_ADMINLIST_USERS:-hello@dify.ai}
+    volumes:
+      - weaviate_data:/var/lib/weaviate
 
   # The postgres database.
   db:
@@ -450,14 +465,14 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-difyai123456}
       POSTGRES_DB: ${POSTGRES_DB:-dify}
       PGDATA: ${PGDATA:-/var/lib/postgresql/data/pgdata}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     command: >
       postgres -c 'max_connections=${POSTGRES_MAX_CONNECTIONS:-100}'
                -c 'shared_buffers=${POSTGRES_SHARED_BUFFERS:-128MB}'
                -c 'work_mem=${POSTGRES_WORK_MEM:-4MB}'
                -c 'maintenance_work_mem=${POSTGRES_MAINTENANCE_WORK_MEM:-64MB}'
                -c 'effective_cache_size=${POSTGRES_EFFECTIVE_CACHE_SIZE:-4096MB}'
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD", "pg_isready"]
       interval: 1s
@@ -466,22 +481,22 @@ services:
     ports:
       - "${EXPOSE_DB_PORT:-5432}:5432"
 
-  # The redis cache.
   redis:
-    container_name: local-ai.redis
-    image: redis:7-alpine
+    container_name: local-ai.dragonfly
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
     restart: unless-stopped
     environment:
-      REDISCLI_AUTH: ${REDIS_PASSWORD:-difyai123456}
+      REDISCLI_AUTH: ${REDIS_PASSWORD:-sk-your-redis-password}
     volumes:
       - redis_data:/data
-    # Set the redis password when startup redis server.
-    command: redis-server --requirepass ${REDIS_PASSWORD:-difyai123456} --maxmemory-policy noeviction
+    command: --requirepass ${REDIS_PASSWORD:-sk-your-redis-password} --default_lua_flags allow-undeclared-keys
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 3s
       timeout: 10s
       retries: 10
+    # ports:
+    #   - "${REDIS_PORT:-6379}:6379"
 
   # The S3 storage service.
   minio:
@@ -501,8 +516,8 @@ services:
       timeout: 20s
       retries: 3
     ports:
-      - 8090:9000
-      - 8091:9001
+      # - "9000:9000"
+      - "9001:9001"
 
   # The ETL (Extract Transform Load) engine used by doc extractor node
   unstructured:
@@ -514,7 +529,7 @@ services:
 
   clickhouse:
     container_name: local-ai.clickhouse
-    image: clickhouse/clickhouse-server
+    image: clickhouse/clickhouse-server:latest-alpine
     user: "101:101"
     hostname: clickhouse
     environment:
@@ -525,31 +540,33 @@ services:
       - clickhouse_data:/var/lib/clickhouse
       - clickhouse_logs:/var/log/clickhouse-server
     healthcheck:
-      test:
-        ["CMD", "curl", "-s", "http://localhost:8123/ping >/dev/null || exit 1"]
+      test: [ "CMD", "wget", "--spider", "-q", "http://clickhouse:8123/ping" ]
       interval: 5s
       timeout: 5s
       retries: 10
       start_period: 1s
-    ports:
-      - "8123:8123"
-      - "9000:9000"
+    # ports:
+    #   - "8123:8123"
 
   langfuse-worker:
     container_name: local-ai.langfuse-worker
-    image: langfuse/langfuse-worker:3.28.3
+    image: langfuse/langfuse-worker:3.37.0
     restart: unless-stopped
     depends_on:
-      - db
-      - redis
-      - minio
-      - clickhouse
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     environment: &langfuse-worker-env
       DATABASE_HOST: ${LANGFUSE_POSTGRES_HOST:-${DB_HOST}}
       DATABASE_USERNAME: ${LANGFUSE_PGUSER:-${DB_USERNAME}}
       DATABASE_PASSWORD: ${LANGFUSE_POSTGRES_PASSWORD:-${DB_PASSWORD}}
       DATABASE_NAME: ${LANGFUSE_POSTGRES_DB:-langfuse}
-      SALT: ${LANGFUSE_SALT:-your-salt}
+      SALT: ${LANGFUSE_SALT:-sk-your-langfuse-salt}
       ENCRYPTION_KEY: ${LANGFUSE_ENCRYPTION_KEY:-0000000000000000000000000000000000000000000000000000000000000000}
       TELEMETRY_ENABLED: ${LANGFUSE_TELEMETRY_ENABLED:-true}
       LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES: ${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-true}
@@ -577,22 +594,26 @@ services:
       REDIS_HOST: ${LANGFUSE_REDIS_HOST:-redis}
       REDIS_PORT: ${LANGFUSE_REDIS_PORT:-6379}
       REDIS_AUTH: ${LANGFUSE_REDIS_AUTH:-difyai123456}
-    ports:
-      - "3030:3030"
+    # ports:
+    #   - "3030:3030"
 
   langfuse-web:
     container_name: local-ai.langfuse-web
-    image: langfuse/langfuse:3.28.3
+    image: langfuse/langfuse:3.37.0
     restart: unless-stopped
     depends_on:
-      - db
-      - redis
-      - minio
-      - clickhouse
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      minio:
+        condition: service_healthy
+      clickhouse:
+        condition: service_healthy
     environment:
       <<: *langfuse-worker-env
       NEXTAUTH_URL: ${LANGFUSE_NEXTAUTH_URL:-http://localhost:3000}
-      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-your-secret}
+      NEXTAUTH_SECRET: ${LANGFUSE_NEXTAUTH_SECRET:-sk-your-langfuse-nextauth-secret}
       LANGFUSE_INIT_ORG_ID: ${LANGFUSE_INIT_ORG_ID:-}
       LANGFUSE_INIT_ORG_NAME: ${LANGFUSE_INIT_ORG_NAME:-}
       LANGFUSE_INIT_PROJECT_ID: ${LANGFUSE_INIT_PROJECT_ID:-}

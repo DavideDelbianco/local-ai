@@ -335,6 +335,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       # Use the shared environment variables.
       <<: *shared-api-worker-env
@@ -545,7 +547,7 @@ services:
 
   langfuse-worker:
     container_name: local-ai.langfuse-worker
-    image: langfuse/langfuse-worker:3.37.0
+    image: langfuse/langfuse-worker:3
     restart: unless-stopped
     depends_on:
       db:
@@ -594,7 +596,7 @@ services:
 
   langfuse-web:
     container_name: local-ai.langfuse-web
-    image: langfuse/langfuse:3.37.0
+    image: langfuse/langfuse:3
     restart: unless-stopped
     depends_on:
       db:

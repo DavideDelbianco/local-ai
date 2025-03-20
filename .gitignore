@@ -145,7 +145,7 @@ volumes/clickhouse/*
 volumes/ollama/*
 volumes/open-webui/*
 volumes/minio/*
-volumes/plugin_daemon/*
+volumes/plugin-daemon/*
 volumes/redis/data/*
 volumes/ssrf_proxy/*
 volumes/unstructured/*

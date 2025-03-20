@@ -30,9 +30,18 @@ server {
     }
 
     location /e/ {
-      proxy_pass http://plugin_daemon:5002;
+      proxy_pass http://plugin-daemon:5002;
       proxy_set_header Dify-Hook-Url $scheme://$host$request_uri;
       include proxy.conf;
+    }
+
+    location /marketplace {
+      rewrite ^/marketplace/(.*)$ /$1 break;
+      proxy_ssl_server_name on;
+      proxy_pass https://marketplace.dify.ai;
+      proxy_pass_request_headers off;
+      proxy_set_header Host "marketplace.dify.ai";
+      proxy_set_header Connection "";
     }
 
     location / {

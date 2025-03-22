@@ -235,7 +235,7 @@ services:
   # API service
   api:
     container_name: local-ai.dify-api
-    image: langgenius/dify-api:1.1.1
+    image: langgenius/dify-api:1.1.2
     restart: unless-stopped
     depends_on:
       db:
@@ -266,7 +266,7 @@ services:
   # The Celery worker for processing the queue.
   worker:
     container_name: local-ai.dify-worker
-    image: langgenius/dify-api:1.1.1
+    image: langgenius/dify-api:1.1.2
     restart: unless-stopped
     depends_on:
       db:
@@ -294,7 +294,7 @@ services:
   # Frontend web application.
   web:
     container_name: local-ai.dify-web
-    image: langgenius/dify-web:1.1.1
+    image: langgenius/dify-web:1.1.2
     restart: unless-stopped
     environment:
       CONSOLE_API_URL: ${CONSOLE_API_URL:-}
